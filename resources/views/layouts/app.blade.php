@@ -6,6 +6,7 @@
     <title>@yield('title', config('app.name'))</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased flex flex-col min-h-screen">
     @include('partials.navbar')
