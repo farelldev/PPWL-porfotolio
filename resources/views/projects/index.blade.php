@@ -34,7 +34,7 @@
                 <tbody class="text-gray-700">
                     @foreach ($projects as $index => $project)
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="py-3 px-4">{{ $index + 1 }}</td>
+                            <td class="py-3 px-4">{{ $projects->firstItem() + $index }}</td>
                             <td class="py-3 px-4 font-medium">{{ $project->title }}</td>
                             <td class="py-3 px-4">{{ $project->description }}</td>
                             <td class="px-4 py-2 border-b">
@@ -56,6 +56,8 @@
                     @endforeach
                 </tbody>
             </table>
+
+            {{ $projects->links() }}
         </div>
     @else
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded" role="alert">

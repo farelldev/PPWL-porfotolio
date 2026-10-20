@@ -14,7 +14,7 @@ class ProjectController extends Controller
     {
         $data = array(
             'id' => "projects",
-            'projects' => Project::all()
+            'projects' => Project::orderBy('created_at', 'desc')->paginate(10)
         );
         return view('projects.index')->with($data);
     }
@@ -92,7 +92,7 @@ class ProjectController extends Controller
 
     public function trash()
     {
-        $projects = Project::onlyTrashed()->get();
+        $projects = Project::onlyTrashed()->orderBy('created_at', 'desc')->paginate(10);
         return view('projects.trash', compact('projects'));
     }
 

@@ -38,17 +38,14 @@
                                     {{ ucfirst($project->status) }}
                                 </span>
                             </td>
-                            <!-- Menggunakan deleted_at agar tahu kapan dihapus -->
                             <td class="py-3 px-4">{{ $project->deleted_at }}</td>
                             <td class="py-3 px-4 flex items-center justify-center gap-2">
                                 
-                                <!-- Tombol Restore -->
                                 <form action="{{ route('projects.restore', $project->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin mengembalikan project ini?');">
                                     @csrf
                                     <button type="submit" class="bg-teal-500 hover:bg-teal-600 text-white text-sm py-1 px-3 rounded transition duration-300">Restore</button>
                                 </form>
 
-                                <!-- Tombol Force Delete -->
                                 <form action="{{ route('projects.force-delete', $project->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Peringatan! Yakin ingin menghapus project ini PERMANEN? Data tidak bisa dikembalikan!');">
                                     @csrf
                                     @method('DELETE')
@@ -60,6 +57,8 @@
                     @endforeach
                 </tbody>
             </table>
+
+            {{ $projects->links() }}
         </div>
     @else
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded" role="alert">
