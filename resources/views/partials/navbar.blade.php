@@ -9,6 +9,27 @@
                 <a href="{{ route('education') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Education</a>
                 <a href="{{ route('projects.index') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Projects</a>
             </div>
+
+            @auth
+                <div class="flex items-center space-x-4 pl-4 border-l border-slate-200">
+                    <span class="text-sm font-semibold text-slate-700">
+                        Halo, {{ Auth::user()->name }}
+                    </span>
+                    
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-sm text-red-600 hover:text-red-700 font-medium transition-colors">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            @endauth
+
+            @guest
+                <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+                    Login
+                </a>
+            @endguest
         </div>
     </div>
 </nav>

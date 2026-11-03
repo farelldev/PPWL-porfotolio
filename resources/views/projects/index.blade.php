@@ -34,10 +34,7 @@
                     <option value="10" {{ request('per_page') == 10 || !request('per_page') ? 'selected' : '' }}>10 per halaman</option>
                     <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 per halaman</option>
                 </select>
-
-            </div>
-
-            
+            </div>            
         </form>
     </div>
 
@@ -72,7 +69,7 @@
                                 </span>
                             </td>
                             <td class="py-3 px-4">{{ $project->created_at }}</td>
-                            <td class="py-3 px-4 gap-2 flex items-center justify-center gap-2">
+                            <td class="py-3 px-4 gap-2 flex items-center justify-center">
                                 <a href="{{ route('projects.edit', $project->id) }}" class="bg-teal-500 hover:bg-teal-600 text-white text-sm py-1 px-3 rounded transition duration-300">Edit</a>
 
                                 <form action="{{ route('projects.destroy', $project->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus project ini?');">
@@ -87,7 +84,7 @@
             </table>
         </div>
 
-            {{ $projects->links() }}
+        {{ $projects->links() }}
     @else
         <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded" role="alert">
             <p>Belum ada data project.</p>
