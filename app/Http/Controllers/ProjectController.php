@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Project;
 
 class ProjectController extends Controller
@@ -43,7 +44,14 @@ class ProjectController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|min:5|max:200',
             'description' => 'required|string|min:10',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
+                            . '|dimensions:min_width=400,min_height=300',
         ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $validated['thumbnail'] = $request->file('thumbnail')
+                ->store('projects/thumbnails', 'public');
+        }
 
         Project::create($validatedData);
 
@@ -77,7 +85,17 @@ class ProjectController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|min:5|max:200',
             'description' => 'required|string|min:10',
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
+                            . '|dimensions:min_width=400,min_height=300',
         ]);
+
+        if ($request->hasFile('thumbnail')) {
+            if ($project->thumbnail) {
+                Storage::disk('public')->delete($project->thumbnail);
+            }
+            $validated['thumbnail'] = $request->file('thumbnail')
+                ->store('projects/thumbnails', 'public');
+        }
 
         $project = Project::findOrFail($id);
         $project->update($validatedData);
@@ -91,6 +109,13 @@ class ProjectController extends Controller
      */
     public function destroy(string $id)
     {
+        if ($project->thumbnail) {
+            Storage::disk('public')->delete($project->thumbnail);
+        }
+        foreach ($project->images as $image) {
+            Storage::disk('public')->delete($image->image);
+        }
+
         $project = Project::findOrFail($id);
         $project->delete();
 
@@ -118,5 +143,10 @@ class ProjectController extends Controller
         $project->forceDelete();
 
         return redirect()->route('projects.trash')->with('success', 'Project dihapus permanen.');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
     }
 }

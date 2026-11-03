@@ -5,7 +5,7 @@
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h1 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">Add New Project</h1>
         
-        <form action="{{ route('projects.store') }}" method="POST">
+        <form action="{{ route('projects.store') }}" method="POST" enctype="multipart/form-data">
             @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
                     <strong class="font-bold">Oops! Ada kesalahan.</strong>
@@ -41,6 +41,11 @@
                     <option value="published">Published</option>
                 </select>
             </div>
+
+            <input type="file" name="thumbnail" accept="image/*">
+            @error('thumbnail')
+            <p class="text-red-500 text-sm">{{ $message }}</p>
+            @enderror
             
             <div class="flex items-center justify-between">
                 <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition duration-300" type="submit">

@@ -9,12 +9,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('post.dashboard', [
+        return view('projects.dashboard', [
         'totalProjects' => Project::count(),
         'totalCategories' => Category::count(),
         'totalTechnologies' => Technology::count(),
         'totalSkills' => Skill::count(),
-        'latestProjects' => Project::with('category')->latest()->take(5)->get(),
+        'latestProjects' => Project::latest()->take(5)->get(),
         ]);
     }
 }
