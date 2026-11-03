@@ -26,6 +26,9 @@ Route::prefix('post')->middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    Route::post('projects/{project}/gallery', [ProjectGalleryController::class, 'store'])->name('projects.gallery.store');
+    Route::delete('projects/{project}/gallery/{image}', [ProjectGalleryController::class, 'destroy'])->name('projects.gallery.destroy');
 });
 
 require __DIR__.'/auth.php';

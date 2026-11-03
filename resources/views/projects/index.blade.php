@@ -50,6 +50,7 @@
                 <thead class="bg-gray-800 text-white">
                     <tr>
                         <th class="py-3 px-4 text-left font-semibold text-sm">No</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Thumbnail</th>
                         <th class="py-3 px-4 text-left font-semibold text-sm">Judul Project</th>
                         <th class="py-3 px-4 text-left font-semibold text-sm">Deskripsi</th>
                         <th class="py-3 px-4 text-left font-semibold text-sm">Status</th>
@@ -61,6 +62,13 @@
                     @foreach ($projects as $index => $project)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="py-3 px-4">{{ $projects->firstItem() + $index }}</td>
+                            <td class="py-3 px-4">
+                                @if ($project->thumbnail)
+                                    <img src="{{ asset('storage/' . $project->thumbnail) }}" alt="{{ $project->title }}" class="w-16 h-16 object-cover rounded shadow-sm">
+                                @else
+                                    <span class="text-xs text-gray-400 italic">No image</span>
+                                @endif
+                            </td>
                             <td class="py-3 px-4 font-medium">{{ $project->title }}</td>
                             <td class="py-3 px-4">{{ $project->description }}</td>
                             <td class="px-4 py-2 border-b">

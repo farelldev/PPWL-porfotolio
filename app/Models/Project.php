@@ -17,4 +17,9 @@ class Project extends Model
     {
         return $query->where('status', 'published');
     }
+
+     public function images()
+    {
+        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
+    }
 }

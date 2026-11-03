@@ -41,7 +41,7 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|min:5|max:200',
             'description' => 'required|string|min:10',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
@@ -53,7 +53,7 @@ class ProjectController extends Controller
                 ->store('projects/thumbnails', 'public');
         }
 
-        Project::create($validatedData);
+        Project::create($validated);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil ditambahkan.');
@@ -82,7 +82,9 @@ class ProjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validatedData = $request->validate([
+        $project = Project::findOrFail($id);
+
+        $validated = $request->validate([
             'title' => 'required|string|min:5|max:200',
             'description' => 'required|string|min:10',
             'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
@@ -97,8 +99,7 @@ class ProjectController extends Controller
                 ->store('projects/thumbnails', 'public');
         }
 
-        $project = Project::findOrFail($id);
-        $project->update($validatedData);
+        $project->update($validated);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil diperbarui.');
@@ -109,6 +110,8 @@ class ProjectController extends Controller
      */
     public function destroy(string $id)
     {
+        $project = Project::findOrFail($id);
+
         if ($project->thumbnail) {
             Storage::disk('public')->delete($project->thumbnail);
         }
@@ -116,7 +119,6 @@ class ProjectController extends Controller
             Storage::disk('public')->delete($image->image);
         }
 
-        $project = Project::findOrFail($id);
         $project->delete();
 
         return redirect()->route('projects.index')
@@ -143,10 +145,5 @@ class ProjectController extends Controller
         $project->forceDelete();
 
         return redirect()->route('projects.trash')->with('success', 'Project dihapus permanen.');
-    }
-
-    public function images()
-    {
-        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
     }
 }
