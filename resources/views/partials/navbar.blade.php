@@ -7,6 +7,7 @@
                 <a href="{{ route('home') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Home</a>
                 <a href="{{ route('about') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">About</a>
                 <a href="{{ route('education') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Education</a>
+                <a href="{{ route('experience') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Experience</a>
                 <a href="{{ route('projects.index') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Projects</a>
             </div>
 

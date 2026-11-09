@@ -3,11 +3,13 @@
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('home'))->name('home');
-Route::get('/about', fn() => view('about'))->name('about');
-Route::get('/education', fn() => view('education'))->name('education');
+Route::get('/about', fn() => view('about'))->name('about'); 
+Route::get('/experience', [PageController::class, 'experience'])->name('experience');
+Route::get('/education', [PageController::class, 'education'])->name('education');
 
 Route::prefix('post')->middleware('auth')->group(function () {
     // Route projects yang sudah ada
