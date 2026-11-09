@@ -11,7 +11,7 @@ class Project extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['title', 'description', 'status', 'thumbnail'];
+    protected $fillable = ['title', 'description', 'status', 'thumbnail', 'category_id'];
 
     public function scopePublished(Builder $query): Builder
     {

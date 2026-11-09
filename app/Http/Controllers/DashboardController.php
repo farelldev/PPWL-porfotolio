@@ -9,12 +9,25 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        return view('projects.dashboard', [
-        'totalProjects' => Project::count(),
-        'totalCategories' => Category::count(),
-        'totalTechnologies' => Technology::count(),
-        'totalSkills' => Skill::count(),
-        'latestProjects' => Project::latest()->take(5)->get(),
-        ]);
+        $totalProjects = Project::count();
+        $publishedProjects = Project::where('status', 'published')->count();
+        $draftProjects = Project::where('status', 'draft')->count();
+        $totalSkills = Skill::count();
+
+        $categories = Category::withCount('projects')->get();
+
+        $topSkills = Skill::withCount('projects')
+                        ->orderBy('projects_count', 'desc')
+                        ->take(5)
+                        ->get();
+
+        return view('projects.dashboard', compact(
+            'totalProjects', 
+            'publishedProjects', 
+            'draftProjects', 
+            'totalSkills',
+            'categories',
+            'topSkills'
+        ));
     }
 }
