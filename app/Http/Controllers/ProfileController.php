@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -35,6 +36,25 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    public function updatePhoto(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'profile_photo' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:5120', 'dimensions:min_width=200,min_height=200'],
+        ]);
+
+        $user = $request->user();
+        $photoPath = $validated['profile_photo']->store('profile-photos', 'public');
+
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+        }
+
+        $user->profile_photo_path = $photoPath;
+        $user->save();
+
+        return Redirect::route('profile.saya')->with('status', 'Foto profil berhasil diperbarui.');
     }
 
     /**

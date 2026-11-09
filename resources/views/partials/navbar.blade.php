@@ -12,10 +12,10 @@
             </div>
 
             @auth
-                <div class="flex items-center space-x-4 pl-4 border-l border-slate-200">
-                    <span class="text-sm font-semibold text-slate-700">
+                <div class="flex items-center gap-4 pl-4 border-l border-slate-200">
+                    <a href="{{ route('profile.saya') }}" class="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
                         Halo, {{ Auth::user()->name }}
-                    </span>
+                    </a>
                     
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
@@ -23,6 +23,14 @@
                             Logout
                         </button>
                     </form>
+                    <a href="{{ route('profile.saya') }}" aria-label="Profil {{ Auth::user()->name }}" class="shrink-0">
+                        @if (Auth::user()->profile_photo_path)
+                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Foto profil {{ Auth::user()->name }}" class="h-10 w-10 rounded-full object-cover ring-2 ring-blue-100">                        @else
+                            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700 ring-2 ring-blue-100">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                            </span>
+                        @endif
+                    </a>
                 </div>
             @endauth
 

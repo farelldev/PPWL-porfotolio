@@ -21,6 +21,7 @@ Route::prefix('post')->middleware('auth')->group(function () {
     Route::get('/profile-saya', function () {
         return view('profile.saya');
     })->name('profile.saya');
+    Route::post('/profile-saya/foto', [ProfileController::class, 'updatePhoto'])->name('profile.saya.photo.update');
     
     // Route profile bawaan Breeze
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

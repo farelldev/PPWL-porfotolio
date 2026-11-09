@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -19,6 +21,33 @@ class ProfileTest extends TestCase
             ->get('/profile');
 
         $response->assertOk();
+    }
+
+    public function test_user_can_upload_a_profile_photo_at_least_200_by_200_pixels(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('profile.saya.photo.update'), [
+            'profile_photo' => UploadedFile::fake()->image('avatar.jpg', 200, 200),
+        ]);
+
+        $response->assertSessionHasNoErrors()->assertRedirect(route('profile.saya'));
+        $this->assertNotNull($user->fresh()->profile_photo_path);
+        Storage::disk('public')->assertExists($user->fresh()->profile_photo_path);
+    }
+
+    public function test_profile_photo_must_be_at_least_200_by_200_pixels(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->from(route('profile.saya'))->post(route('profile.saya.photo.update'), [
+            'profile_photo' => UploadedFile::fake()->image('avatar.jpg', 199, 300),
+        ]);
+
+        $response->assertSessionHasErrors('profile_photo');
+        $this->assertNull($user->fresh()->profile_photo_path);
     }
 
     public function test_profile_information_can_be_updated(): void
