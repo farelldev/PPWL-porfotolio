@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Project;
+use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
@@ -26,6 +27,15 @@ class ProjectController extends Controller
         $projects = $projects->paginate($perPage)->withQueryString();
 
         return view('projects.index', compact('projects'));
+    }
+
+    public function publicIndex(): View
+    {
+        $projects = Project::published()
+            ->latest()
+            ->paginate(9);
+
+        return view('projects.public-index', compact('projects'));
     }
 
     /**
@@ -65,6 +75,16 @@ class ProjectController extends Controller
     public function show(string $id)
     {
         //
+    }
+
+    public function publicShow(string $slug): View
+    {
+        $project = Project::published()
+            ->with('images')
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return view('projects.public-show', compact('project'));
     }
 
     /**

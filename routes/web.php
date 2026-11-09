@@ -4,12 +4,15 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProjectGalleryController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('home'))->name('home');
 Route::get('/about', fn() => view('about'))->name('about'); 
 Route::get('/experience', [PageController::class, 'experience'])->name('experience');
 Route::get('/education', [PageController::class, 'education'])->name('education');
+Route::get('/projects', [ProjectController::class, 'publicIndex'])->name('projects.public.index');
+Route::get('/projects/{slug}', [ProjectController::class, 'publicShow'])->name('projects.public.show');
 
 Route::prefix('post')->middleware('auth')->group(function () {
     // Route projects yang sudah ada
@@ -31,6 +34,7 @@ Route::prefix('post')->middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     Route::post('projects/{project}/gallery', [ProjectGalleryController::class, 'store'])->name('projects.gallery.store');
+    Route::put('projects/{project}/gallery/{image}', [ProjectGalleryController::class, 'update'])->name('projects.gallery.update');
     Route::delete('projects/{project}/gallery/{image}', [ProjectGalleryController::class, 'destroy'])->name('projects.gallery.destroy');
 });
 
