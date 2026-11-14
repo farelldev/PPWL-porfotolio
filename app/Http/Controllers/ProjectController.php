@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Project;
+use App\Models\Category;
+use App\Models\Technology;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
@@ -29,13 +32,35 @@ class ProjectController extends Controller
         return view('projects.index', compact('projects'));
     }
 
-    public function publicIndex(): View
+    public function publicIndex(Request $request): View
     {
-        $projects = Project::published()
-            ->latest()
-            ->paginate(9);
+        $query = Project::with(['category', 'technologies'])
+            ->where('status', 'published')
+            ->when($request->search, fn ($q, $s) =>
+                $q->where(fn ($w) => $w->where('title', 'like', "%{$s}%")
+                    ->orWhere('short_description', 'like', "%{$s}%")
+                    ->orWhere('description', 'like', "%{$s}%")))
+            ->when($request->category, fn ($q, $c) =>
+                $q->whereHas('category', fn ($w) => $w->where('slug', $c)))
+            ->when($request->technology, fn ($q, $t) =>
+                $q->whereHas('technologies', fn ($w) => $w->where('slug', $t)));
 
-        return view('projects.public-index', compact('projects'));
+        switch ($request->query('sort')) {
+            case 'terlama':
+                $query->oldest();
+                break;
+            case 'az':
+                $query->orderBy('title');
+                break;
+            default:
+                $query->latest();
+        }
+
+        $projects = $query->paginate(9)->withQueryString();
+        $categories = Category::orderBy('name')->get();
+        $technologies = Technology::orderBy('name')->get();
+
+        return view('projects.public-index', compact('projects', 'categories', 'technologies'));
     }
 
     /**
@@ -43,7 +68,10 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return view('projects.create');
+        $categories = Category::orderBy('name')->get();
+        $technologies = Technology::orderBy('name')->get();
+
+        return view('projects.create', compact('categories', 'technologies'));
     }
 
     /**
@@ -52,18 +80,30 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|min:5|max:200',
-            'description' => 'required|string|min:10',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
-                            . '|dimensions:min_width=400,min_height=300',
+            'title'             => 'required|string|min:5|max:200|unique:projects,title',
+            'category_id'       => 'required|exists:categories,id',
+            'short_description' => 'nullable|string|max:255',
+            'description'       => 'required|string|min:10', 
+            'status'            => 'required|in:draft,published', 
+            'project_url'       => 'nullable|url|max:255',
+            'repository_url'    => 'nullable|url|max:255',
+            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=400,min_height=300',
+            'technologies'   => 'nullable|array',
+            'technologies.*' => 'exists:technologies,id',
         ]);
+
+        $validated['slug'] = Str::slug($validated['title']) ?: 'project';
 
         if ($request->hasFile('thumbnail')) {
             $validated['thumbnail'] = $request->file('thumbnail')
                 ->store('projects/thumbnails', 'public');
         }
+        
+        $technologyIds = $validated['technologies'] ?? [];
+        unset($validated['technologies']);
 
-        Project::create($validated);
+        $project = Project::create($validated);
+        $project->technologies()->attach($technologyIds);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil ditambahkan.');
@@ -80,7 +120,7 @@ class ProjectController extends Controller
     public function publicShow(string $slug): View
     {
         $project = Project::published()
-            ->with('images')
+            ->with(['category', 'technologies', 'images'])
             ->where('slug', $slug)
             ->firstOrFail();
 
@@ -92,10 +132,12 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
-        $project = Project::findOrFail($id);
-        return view('projects.edit', ['project' => $project]);
-    }
+        $project = Project::with('technologies')->findOrFail($id);
+        $categories = Category::orderBy('name')->get();
+        $technologies = Technology::orderBy('name')->get();
 
+        return view('projects.edit', compact('project', 'categories', 'technologies'));
+    }
 
     /**
      * Update the specified resource in storage.
@@ -105,10 +147,16 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $validated = $request->validate([
-            'title' => 'required|string|min:5|max:200',
-            'description' => 'required|string|min:10',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048'
-                            . '|dimensions:min_width=400,min_height=300',
+            'title'             => 'required|string|min:5|max:200|unique:projects,title,' . $project->id,
+            'category_id'       => 'required|exists:categories,id',            
+            'short_description' => 'nullable|string|max:255',
+            'description'       => 'required|string|min:10',
+            'status'            => 'required|in:draft,published',
+            'project_url'       => 'nullable|url|max:255',
+            'repository_url'    => 'nullable|url|max:255',            
+            'thumbnail'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048|dimensions:min_width=400,min_height=300',
+            'technologies'   => 'nullable|array',
+            'technologies.*' => 'exists:technologies,id',
         ]);
 
         if ($request->hasFile('thumbnail')) {
@@ -119,10 +167,15 @@ class ProjectController extends Controller
                 ->store('projects/thumbnails', 'public');
         }
 
+        $technologyIds = $validated['technologies'] ?? [];
+        unset($validated['technologies']);
+
         $project->update($validated);
+        $project->technologies()->sync($technologyIds);
 
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil diperbarui.');
+
     }
 
     /**

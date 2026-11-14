@@ -12,7 +12,11 @@ class Project extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['title', 'description', 'status', 'thumbnail', 'category_id'];
+    protected $fillable = [
+        'title', 'slug', 'category_id', 'short_description', 'description',
+        'status', 'project_date', 'is_featured', 'project_url',
+        'repository_url', 'thumbnail'
+    ];
 
     protected static function booted(): void
     {
@@ -39,5 +43,15 @@ class Project extends Model
      public function images()
     {
         return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function technologies()
+    {
+        return $this->belongsToMany(Technology::class);
     }
 }

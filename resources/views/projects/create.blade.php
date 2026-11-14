@@ -24,6 +24,27 @@
                 </label>
                 <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="title" type="text" name="title" required placeholder="Masukkan judul project">
             </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="category_id">
+                    Category
+                </label>
+                <select name="category_id" id="category_id" required class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Pilih Kategori --</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="short_description">
+                    Short Description
+                </label>
+                <input value="{{ old('short_description') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="short_description" type="text" name="short_description" maxlength="255" placeholder="Ringkasan singkat project (opsional)">
+            </div>
             
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
@@ -40,6 +61,34 @@
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>
                 </select>
+            </div>
+
+            <div class="mb-4">
+                <span class="block text-gray-700 text-sm font-bold mb-2">Technologies</span>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    @foreach ($technologies as $tech)
+                        <label class="inline-flex items-center space-x-2 text-sm text-gray-700">
+                            <input type="checkbox" name="technologies[]" value="{{ $tech->id }}"
+                                @checked(in_array($tech->id, old('technologies', [])))
+                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span>{{ $tech->name }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="project_url">
+                    Project URL (Demo)
+                </label>
+                <input value="{{ old('project_url') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="project_url" type="url" name="project_url" placeholder="https://example.com">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="repository_url">
+                    Repository URL (GitHub)
+                </label>
+                <input value="{{ old('repository_url') }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500" id="repository_url" type="url" name="repository_url" placeholder="https://github.com/username/repo">
             </div>
 
             <input type="file" name="thumbnail" accept="image/*">
