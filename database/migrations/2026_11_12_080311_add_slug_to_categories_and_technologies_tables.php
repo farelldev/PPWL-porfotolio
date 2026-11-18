@@ -25,14 +25,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Schema::table('categories', function (Blueprint $table) {
-        //     $table->dropUnique(['slug']);
-        //     $table->dropColumn('slug');
-        // });
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropUnique(['slug']);
+            $table->dropColumn('slug');
+        });
 
-        // Schema::table('technologies', function (Blueprint $table) {
-        //     $table->dropUnique(['slug']);
-        //     $table->dropColumn('slug');
-        // });
+        Schema::table('technologies', function (Blueprint $table) {
+            $table->dropUnique(['slug']);
+            $table->dropColumn('slug');
+        });
     }
 };

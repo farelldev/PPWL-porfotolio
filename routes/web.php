@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectGalleryController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('home'))->name('home');
@@ -13,6 +14,10 @@ Route::get('/experience', [PageController::class, 'experience'])->name('experien
 Route::get('/education', [PageController::class, 'education'])->name('education');
 Route::get('/projects', [ProjectController::class, 'publicIndex'])->name('projects.public.index');
 Route::get('/projects/{slug}', [ProjectController::class, 'publicShow'])->name('projects.public.show');
+Route::get('/contact', [ContactController::class, 'create'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->middleware('throttle:contact')
+    ->name('contact.store');
 
 Route::prefix('post')->middleware('auth')->group(function () {
     // Route projects yang sudah ada

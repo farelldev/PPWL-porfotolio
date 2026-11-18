@@ -12,7 +12,6 @@ class UpdateProjectsWithCategoriesAndTechSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Buat Kategori beserta slug
         $categoryNames = ['Web Application', 'Mobile App', 'UI/UX Design', 'REST API'];
         $categoryIds = [];
 
@@ -24,7 +23,6 @@ class UpdateProjectsWithCategoriesAndTechSeeder extends Seeder
             $categoryIds[] = $category->id;
         }
 
-        // 2. Buat Teknologi beserta slug
         $techNames = ['Laravel', 'Tailwind CSS', 'React', 'Vue.js', 'MySQL', 'Flutter'];
         $techIds = [];
 
@@ -36,12 +34,10 @@ class UpdateProjectsWithCategoriesAndTechSeeder extends Seeder
             $techIds[] = $tech->id;
         }
 
-        // 3. Lengkapi data pada 25 proyek yang sudah ada
         $sampleTopics = ['Laravel Blog', 'Sistem Akademik', 'E-Commerce Toko', 'Aplikasi Kasir', 'Portal Berita', 'Landing Page'];
         $projects = Project::all();
 
         foreach ($projects as $index => $project) {
-            // Variasikan beberapa judul agar mudah dites saat search & sort A-Z
             $topic = $sampleTopics[$index % count($sampleTopics)];
             $newTitle = str_starts_with($project->title, 'Project tambahan')
                 ? $topic . ' #' . ($index + 1)
@@ -59,7 +55,6 @@ class UpdateProjectsWithCategoriesAndTechSeeder extends Seeder
                 'repository_url'    => 'https://github.com/username/' . Str::slug($newTitle),
             ]);
 
-            // Pasangkan 2-3 teknologi secara acak ke tabel pivot
             $randomTechs = collect($techIds)->random(rand(2, 3))->toArray();
             $project->technologies()->sync($randomTechs);
         }
