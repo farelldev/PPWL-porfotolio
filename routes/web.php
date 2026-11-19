@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProjectGalleryController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContactAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('home'))->name('home');
@@ -25,6 +26,8 @@ Route::prefix('post')->middleware('auth')->group(function () {
     Route::post('/projects/{id}/restore', [ProjectController::class, 'restore'])->name('projects.restore');
     Route::delete('/projects/{id}/force-delete', [ProjectController::class, 'forceDelete'])->name('projects.force-delete');
     Route::resource('projects', ProjectController::class);
+    Route::get('/contacts', [ContactAdminController::class, 'index'])->name('contacts.index');
+    Route::get('/contacts/{contact}', [ContactAdminController::class, 'show'])->name('contacts.show');
 
     Route::get('/profile-saya', function () {
         return view('profile.saya');

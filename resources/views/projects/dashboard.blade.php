@@ -8,6 +8,8 @@
         <x-stat-card label="Published" :value="$publishedProjects" color="text-green-600" />
         <x-stat-card label="Drafts" :value="$draftProjects" color="text-yellow-600" />
         <x-stat-card label="Total Skills" :value="$totalSkills" color="text-orange-600" />
+        <x-stat-card label="Total Messages" :value="$totalMessages" color="text-purple-600" />
+        <x-stat-card label="Unread Messages" :value="$unreadMessages" color="text-red-600" />
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

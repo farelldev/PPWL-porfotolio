@@ -9,6 +9,7 @@
                 <a href="{{ route('education') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Education</a>
                 <a href="{{ route('experience') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Experience</a>
                 <a href="{{ route('projects.public.index') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Projects</a>
+                <a href="{{ route('contact') }}" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Contact</a>
             </div>
 
             @auth
@@ -22,6 +23,8 @@
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Dashboard</a>
                             <a href="{{ route('projects.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Kelola Projects</a>
                             <a href="{{ route('profile.saya') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600">Profil Saya</a>
+                            <a href="{{ route('contacts.index') }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600}">Messages</a>
+
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
                                 @csrf
                                 <button type="submit" class="block w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50">Logout</button>
