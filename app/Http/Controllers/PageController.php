@@ -3,22 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Education;
+use App\Models\Experience;
+
 
 class PageController extends Controller
 {
     public function experience()
     {
-        // Jika pakai database: $experiences = Experience::orderBy('created_at', 'desc')->get();
-        // return view('pages.experience', compact('experiences'));
-        
-        return view('experience'); 
+        $experiences = Cache::remember('portfolio.experiences', 3600, fn () =>
+            Experience::latest()->get()
+        );
+
+        return view('experience', compact('experiences'));
     }
 
     public function education()
     {
-        // Jika pakai database: $educations = Education::orderBy('created_at', 'desc')->get();
-        // return view('pages.education', compact('educations'));
-        
-        return view('education');
+        $educations = Cache::remember('portfolio.educations', 3600, fn () =>
+            Education::latest()->get()
+        );
+
+        return view('education', compact('educations'));
     }
 }

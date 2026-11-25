@@ -9,7 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactAdminController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('home'))->name('home');
+Route::get('/', [ProjectController::class, 'home'])->name('home');
 Route::get('/about', fn() => view('about'))->name('about'); 
 Route::get('/experience', [PageController::class, 'experience'])->name('experience');
 Route::get('/education', [PageController::class, 'education'])->name('education');
@@ -40,6 +40,7 @@ Route::prefix('post')->middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('dashboard/clear-cache', [DashboardController::class, 'clearCache'])->name('dashboard.clear-cache');
     
     Route::post('projects/{project}/gallery', [ProjectGalleryController::class, 'store'])->name('projects.gallery.store');
     Route::put('projects/{project}/gallery/{image}', [ProjectGalleryController::class, 'update'])->name('projects.gallery.update');

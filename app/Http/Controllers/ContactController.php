@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Jobs\SendContactNotification;
 use App\Models\Contact;
+use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
@@ -21,7 +22,9 @@ class ContactController extends Controller
             'message' => 'required|min:10',
         ]);
 
-        Contact::create($validated);
-        return back()->with('success', 'Pesan berhasil dikirim. Terima kasih!');
+        $contact = Contact::create($validated);
+        SendContactNotification::dispatch($contact);
+        
+        return back()->with('success', 'Pesan berhasil dikirim. Terima kasih!');        
     }
 }

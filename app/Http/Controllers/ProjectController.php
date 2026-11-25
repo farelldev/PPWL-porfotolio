@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use App\Models\Skill;
 use App\Models\Project;
 use App\Models\Category;
 use App\Models\Technology;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Cache;
 
 class ProjectController extends Controller
 {
@@ -26,6 +28,14 @@ class ProjectController extends Controller
         if ($search) {
             $projects->where('title', 'like', "%{$search}%");
         }
+
+        // $categories = Cache::remember('portfolio.categories', 3600, fn () =>
+        //     Category::orderBy('name')->get()
+        // );
+
+        // $technologies = Cache::remember('portfolio.technologies', 3600, fn () =>
+        //     Technology::orderBy('name')->get()
+        // );
 
         $projects = $projects->paginate($perPage)->withQueryString();
 
@@ -61,6 +71,24 @@ class ProjectController extends Controller
         $technologies = Technology::orderBy('name')->get();
 
         return view('projects.public-index', compact('projects', 'categories', 'technologies'));
+    }
+
+    public function home(): View
+    {
+        $featured = Cache::remember('portfolio.featured', 1800, fn () =>
+            Project::with('category')
+                ->where('status', 'published')
+                ->where('is_featured', true)
+                ->latest()
+                ->take(6)
+                ->get()
+        );
+
+        $skills = Cache::remember('portfolio.skills', 3600, fn () =>
+            Skill::orderBy('name')->get()
+        );
+
+        return view('home', compact('featured', 'skills'));
     }
 
     /**
@@ -104,6 +132,8 @@ class ProjectController extends Controller
 
         $project = Project::create($validated);
         $project->technologies()->attach($technologyIds);
+
+        Cache::forget('portfolio.featured');
 
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil ditambahkan.');
@@ -173,6 +203,8 @@ class ProjectController extends Controller
         $project->update($validated);
         $project->technologies()->sync($technologyIds);
 
+        Cache::forget('portfolio.featured');
+
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil diperbarui.');
 
@@ -194,6 +226,8 @@ class ProjectController extends Controller
 
         $project->delete();
 
+        Cache::forget('portfolio.featured');
+
         return redirect()->route('projects.index')
             ->with('success', 'Project berhasil dihapus.');
     }
@@ -209,6 +243,8 @@ class ProjectController extends Controller
         $project = Project::withTrashed()->findOrFail($id);
         $project->restore();
 
+        Cache::forget('portfolio.featured');
+
         return redirect()->route('projects.trash')->with('success', 'Project berhasil dikembalikan.');
     }
 
@@ -216,6 +252,8 @@ class ProjectController extends Controller
     {
         $project = Project::withTrashed()->findOrFail($id);
         $project->forceDelete();
+
+        Cache::forget('portfolio.featured');
 
         return redirect()->route('projects.trash')->with('success', 'Project dihapus permanen.');
     }
